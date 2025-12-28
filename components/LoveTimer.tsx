@@ -36,41 +36,38 @@ const LoveTimer: React.FC = () => {
 
   if (!isStarted) {
     return (
-      <div className="flex flex-col items-center justify-center animate-reveal" style={{ animationDelay: '0.1s' }}>
-        <div className="px-4 py-2 glass rounded-full border-pink-500/20">
-          <span className="text-[10px] text-pink-400 font-black uppercase tracking-[0.3em]">Hẹn ước: 20/04/2025</span>
-        </div>
+      <div className="flex flex-col items-center justify-center animate-reveal">
+        <span className="text-[10px] text-pink-400 font-bold uppercase tracking-[0.4em]">Establishment: 20/04/2025</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 animate-reveal" style={{ animationDelay: '0.1s' }}>
-      <span className="text-[9px] text-gray-500 font-black uppercase tracking-[0.5em] mb-1">Thời gian đồng hành</span>
-      <div className="flex items-center gap-3 md:gap-6">
-        <TimeUnit value={timeLeft.days} label="Days" />
+    <div className="flex flex-col items-center gap-2 animate-reveal">
+      <div className="flex items-center gap-4 md:gap-8">
+        <TimeUnit value={timeLeft.days} label="Ngày" />
         <TimeSeparator />
-        <TimeUnit value={timeLeft.hours} label="Hours" />
+        <TimeUnit value={timeLeft.hours} label="Giờ" />
         <TimeSeparator />
-        <TimeUnit value={timeLeft.minutes} label="Mins" />
+        <TimeUnit value={timeLeft.minutes} label="Phút" />
         <TimeSeparator />
-        <TimeUnit value={timeLeft.seconds} label="Secs" isLast />
+        <TimeUnit value={timeLeft.seconds} label="Giây" />
       </div>
     </div>
   );
 };
 
-const TimeUnit = ({ value, label, isLast = false }: { value: number, label: string, isLast?: boolean }) => (
+const TimeUnit = ({ value, label }: { value: number, label: string }) => (
   <div className="flex flex-col items-center">
-    <div className="text-2xl md:text-4xl font-black font-['Montserrat'] tracking-tighter text-white drop-shadow-[0_0_15px_rgba(251,113,133,0.3)]">
+    <div className="text-3xl md:text-5xl font-bold text-serif text-pink-500 tracking-tighter drop-shadow-sm">
       {value.toString().padStart(2, '0')}
     </div>
-    <span className="text-[7px] md:text-[8px] uppercase tracking-widest text-pink-500/60 font-bold mt-1">{label}</span>
+    <span className="text-[8px] uppercase tracking-[0.2em] text-pink-300 font-black mt-1">{label}</span>
   </div>
 );
 
 const TimeSeparator = () => (
-  <div className="text-xl md:text-3xl font-black text-white/10 self-start mt-1">:</div>
+  <div className="text-xl md:text-3xl font-light text-pink-200 mt-1">:</div>
 );
 
 export default LoveTimer;
