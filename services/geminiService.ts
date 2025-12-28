@@ -7,8 +7,8 @@ export const generateLoveLetter = async (params: {
   recipient: string;
   messageType: string;
 }) => {
-  // Always initialize with named parameter and direct process.env reference
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Khởi tạo client mỗi lần gọi để đảm bảo lấy đúng API_KEY từ env
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
   
   const systemInstruction = `Bạn là một nhà văn lãng mạn và tinh tế, chuyên viết những lời nhắn yêu thương, lời chúc và những đoạn nhật ký cho các cặp đôi. 
   Ngôn ngữ sử dụng phải chân thành, ngọt ngào, có chút thơ mộng nhưng vẫn hiện đại. Hãy viết bằng tiếng Việt.`;
@@ -28,8 +28,7 @@ export const generateLoveLetter = async (params: {
       },
     });
 
-    // Access .text property directly (not a method)
-    return response.text?.trim() || '';
+    return response.text?.trim() || 'Không thể tạo được nội dung vào lúc này.';
   } catch (error) {
     console.error("Gemini Error:", error);
     throw error;
