@@ -9,7 +9,6 @@ interface GalleryGridProps {
   onImageClick: (image: GalleryImage) => void;
 }
 
-// Explicitly type container variants to ensure compatibility with motion components
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -20,7 +19,6 @@ const containerVariants: Variants = {
   },
 };
 
-// Explicitly type item variants and cast ease array to tuple to resolve 'number[]' vs 'Easing' mismatch
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -39,14 +37,14 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ images, onImageClick }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 px-6 md:px-12 pt-32 pb-20"
+      className="columns-2 md:columns-2 lg:columns-3 xl:columns-4 gap-2 md:gap-4 px-3 md:px-12 pt-8 md:pt-16 pb-20"
     >
       {images.map((image) => (
         <motion.div 
           key={image.id}
           variants={itemVariants}
           layoutId={`container-${image.id}`}
-          className="relative mb-4 break-inside-avoid group cursor-pointer overflow-hidden rounded-2xl bg-gray-900 border border-white/5 shadow-2xl transition-all duration-500 hover:border-pink-500/30"
+          className="relative mb-2 md:mb-4 break-inside-avoid group cursor-pointer overflow-hidden rounded-xl md:rounded-2xl bg-gray-900 border border-white/5 shadow-xl transition-all duration-500 hover:border-pink-500/30"
           onClick={() => onImageClick(image)}
         >
           <motion.img 
@@ -60,20 +58,19 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ images, onImageClick }) => {
           <motion.div 
             initial={{ opacity: 0 }}
             whileHover={{ opacity: 1 }}
-            className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-6"
+            className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent flex flex-col justify-end p-3 md:p-6 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           >
             <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-pink-400 font-bold">{image.category}</span>
-              <h3 className="text-lg font-bold mt-1 text-white leading-tight">{image.title}</h3>
-              <p className="text-xs text-gray-400 mt-1 opacity-70">by {image.artist}</p>
-            </div>
-            
-            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <div className="glass p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-              </div>
+              <span className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-pink-400 font-bold">{image.category}</span>
+              <h3 className="text-sm md:text-lg font-bold mt-0.5 text-white leading-tight line-clamp-2">{image.title}</h3>
+              <p className="text-[9px] md:text-xs text-gray-400 mt-1 opacity-70 italic">by {image.artist}</p>
             </div>
           </motion.div>
+
+          {/* Persistent metadata overlay for mobile touch visibility */}
+          <div className="md:hidden absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+             <h3 className="text-[10px] font-bold text-white/90 line-clamp-1 uppercase tracking-wider">{image.title}</h3>
+          </div>
         </motion.div>
       ))}
     </motion.div>

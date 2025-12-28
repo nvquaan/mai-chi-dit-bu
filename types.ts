@@ -15,6 +15,5 @@ export interface GalleryImage {
 
 export enum AppView {
   GALLERY = 'GALLERY',
-  TIMELINE = 'TIMELINE',
-  PROMPT = 'PROMPT'
+  TIMELINE = 'TIMELINE'
 }

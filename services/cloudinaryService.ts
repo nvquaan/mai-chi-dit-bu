@@ -1,11 +1,11 @@
 
 /**
  * Cloudinary Frontend Delivery Service
- * Sử dụng tính năng "Resource Listing" (Tag-based) để hiển thị ảnh.
  */
 
 const CLOUD_NAME = 'dadfqpexa';
-const TAG_NAME = 'maichi'; 
+// Ưu tiên lấy Tag từ biến môi trường, mặc định là 'all' hoặc 'maichi'
+const TAG_NAME = (process.env as any).CLOUDINARY_TAG || 'all'; 
 
 export const getCloudinaryUrl = (publicId: string, options: { width?: number; height?: number; crop?: string } = {}) => {
   if (!publicId) return '';
@@ -26,6 +26,7 @@ export const getCloudinaryUrl = (publicId: string, options: { width?: number; he
 
 export const fetchImagesFromCloudinary = async () => {
   try {
+    // Cloudinary yêu cầu Resource List phải thông qua Tag để bảo mật phía Client
     const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${TAG_NAME}.json`;
     
     const response = await fetch(url, {
@@ -34,20 +35,19 @@ export const fetchImagesFromCloudinary = async () => {
     });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error(`Tag "${TAG_NAME}" chưa có ảnh nào. Vui lòng gắn tag trên Cloudinary.`);
-      }
-      throw new Error('Cấu hình Cloudinary chưa đúng (Resource List bị chặn hoặc sai Cloud Name).');
+      console.warn(`Không tìm thấy ảnh với tag: ${TAG_NAME}`);
+      return [];
     }
 
     const data = await response.json();
-    
+    if (!data.resources) return [];
+
     return data.resources.map((res: any) => ({
       id: res.public_id,
       url: res.public_id,
-      title: 'Khoảnh khắc yêu thương',
+      title: 'Khoảnh khắc',
       artist: 'Mai Chi',
-      category: 'Kỷ Niệm',
+      category: 'Archive',
       width: res.width || 1200,
       height: res.height || 800,
       cloudinaryData: {
@@ -56,7 +56,7 @@ export const fetchImagesFromCloudinary = async () => {
       }
     }));
   } catch (error: any) {
-    console.error('Cloudinary Error:', error);
-    throw error;
+    console.error('Cloudinary Fetch Error:', error);
+    return [];
   }
 };

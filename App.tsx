@@ -1,91 +1,36 @@
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from './components/Header';
 import Background from './components/Background';
 import CustomCursor from './components/CustomCursor';
 import GalleryGrid from './components/GalleryGrid';
 import Lightbox from './components/Lightbox';
 import Timeline from './components/Timeline';
-import Gatekeeper from './components/Gatekeeper';
-import PromptGenerator from './components/PromptGenerator';
+import LoveTimer from './components/LoveTimer';
 import { AppView, GalleryImage } from './types';
-import { MOCK_CATEGORIES } from './constants';
 import { fetchImagesFromCloudinary } from './services/cloudinaryService';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.GALLERY);
-  const [selectedCategory, setSelectedCategory] = useState('Tất Cả');
   const [activeImage, setActiveImage] = useState<GalleryImage | null>(null);
-  const [isAuthorized, setIsAuthorized] = useState(false);
   const [images, setImages] = useState<GalleryImage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadImages = useCallback(async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const fetchedImages = await fetchImagesFromCloudinary();
       setImages(fetchedImages);
-      setIsAuthorized(true);
-      sessionStorage.setItem('maichi_authorized', 'true');
-    } catch (err: any) {
-      console.error("App load error:", err);
-      setError(err.message);
-      setIsAuthorized(false);
+    } catch (err) {
+      console.error("Failed to load images");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const isAuth = sessionStorage.getItem('maichi_authorized');
-    if (isAuth === 'true') {
-      loadImages();
-    }
+    loadImages();
   }, [loadImages]);
-
-  const handleUnlock = (passcode: string) => {
-    if (passcode.length >= 4) {
-      loadImages();
-    }
-  };
-
-  const filteredImages = useMemo(() => {
-    if (selectedCategory === 'Tất Cả') return images;
-    return images.filter(img => img.category === selectedCategory);
-  }, [selectedCategory, images]);
-
-  if (!isAuthorized && !isLoading) {
-    return (
-      <>
-        <CustomCursor />
-        <Background />
-        <Gatekeeper onUnlock={handleUnlock} />
-        {error && (
-          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[10001] glass px-8 py-5 rounded-3xl border-red-500/50 text-red-400 text-sm font-medium max-w-[90vw] md:max-w-lg shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                </div>
-                <span className="font-bold uppercase tracking-wider text-xs text-red-300">Sync Error</span>
-              </div>
-              <p className="opacity-80 leading-relaxed text-[11px] md:text-xs">
-                {error}. Kiểm tra lại cấu hình <b>Vercel Environment</b> hoặc Tag Cloudinary.
-              </p>
-              <button 
-                onClick={() => setError(null)}
-                className="text-[9px] uppercase font-bold text-pink-400 hover:text-white transition-colors text-right"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        )}
-      </>
-    );
-  }
 
   return (
     <div className="min-h-screen selection:bg-pink-500/30">
@@ -96,90 +41,133 @@ const App: React.FC = () => {
       <main className="transition-all duration-700 ease-in-out">
         {currentView === AppView.GALLERY ? (
           <>
-            <section className="pt-48 px-6 text-center">
-              <div className="inline-block px-4 py-1 glass rounded-full mb-6 border-pink-500/20">
-                <span className="text-[10px] text-pink-400 font-bold uppercase tracking-[0.4em]">Digital Heritage</span>
+            <section className="pt-36 md:pt-56 px-6 text-center">
+              {/* Top Badge: Refined & Centered */}
+              <div className="inline-flex items-center justify-center gap-4 mb-8 md:mb-12 group animate-reveal">
+                <div className="w-10 md:w-16 h-[1px] bg-gradient-to-r from-transparent to-pink-500/50"></div>
+                <span className="text-[11px] md:text-[15px] text-white font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] leading-none whitespace-nowrap">
+                  Hồ Sơ Cá Biệt Phú Xuyên
+                </span>
+                <div className="w-10 md:w-16 h-[1px] bg-gradient-to-l from-transparent to-pink-500/50"></div>
               </div>
-              <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter mb-8 font-['Montserrat'] animate-reveal leading-none">
-                M.CHI <span className="text-gradient">25.</span>
-              </h1>
-              <p className="text-gray-500 text-sm max-w-lg mx-auto mb-16 opacity-60 font-light tracking-widest uppercase">
-                Tag Filtered: maichi • Cloudinary Native
-              </p>
               
-              <div className="flex flex-wrap justify-center gap-3 mb-20 max-w-2xl mx-auto">
-                {MOCK_CATEGORIES.map(cat => (
-                  <button 
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 ${
-                      selectedCategory === cat 
-                      ? 'bg-white text-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] scale-105' 
-                      : 'glass text-gray-500 hover:text-white hover:border-white/20'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <h1 className="text-5xl sm:text-7xl md:text-[10rem] font-black tracking-tighter mb-10 md:mb-12 font-['Montserrat'] animate-reveal leading-[1] md:leading-[0.85] select-none">
+                Mai Chi <span className="text-gradient block md:inline drop-shadow-[0_0_30px_rgba(251,113,133,0.2)]">đít bự</span>
+              </h1>
+
+              {/* Real-time Love Timer */}
+              <div className="mb-12 md:mb-20">
+                <LoveTimer />
+              </div>
+
+              {/* Bottom Badge: Clean Tech Style */}
+              <div className="flex justify-center items-center mb-20 md:mb-32 animate-reveal" style={{ animationDelay: '0.2s' }}>
+                <div className="relative group">
+                   <div className="relative flex flex-col items-center">
+                      <div className="relative px-8 md:px-14 py-4 md:py-5 bg-white/[0.03] border-y border-white/10 backdrop-blur-md overflow-hidden">
+                        {/* Soft glow background */}
+                        <div className="absolute inset-0 bg-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <span className="relative z-10 text-white text-xs md:text-xl font-black uppercase tracking-[0.5em] md:tracking-[0.8em] italic">
+                          {isLoading ? 'Retrieving Data...' : 'NGƯỜI ĐÀN BÀ LỰC ĐIỀN'}
+                        </span>
+                        
+                        {/* Sharp corner markers */}
+                        <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-pink-500/40"></div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-pink-500/40"></div>
+                      </div>
+                   </div>
+                </div>
               </div>
             </section>
 
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-6 md:px-12 pb-20">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-12 pb-20">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="h-80 glass rounded-[2rem] animate-pulse"></div>
+                  <div key={i} className="h-60 md:h-80 glass rounded-2xl animate-pulse"></div>
                 ))}
               </div>
             ) : images.length > 0 ? (
               <GalleryGrid 
-                images={filteredImages} 
+                images={images} 
                 onImageClick={setActiveImage} 
               />
             ) : (
-              <div className="text-center py-40 opacity-20 flex flex-col items-center gap-6">
-                <div className="w-20 h-20 rounded-full border border-dashed border-white/10 flex items-center justify-center animate-pulse">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              <div className="text-center py-20 flex flex-col items-center gap-8 max-w-2xl mx-auto px-6">
+                <div className="relative">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border border-pink-500/20 flex items-center justify-center animate-pulse">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500 opacity-30 md:w-12 md:h-12"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.403a2 2 0 0 0-1.858 1.25L5 10l-2-2"/></svg>
+                  </div>
                 </div>
-                <p className="text-xs tracking-[0.5em] uppercase font-light">No Assets Synchronized</p>
+                <div className="space-y-6">
+                  <h3 className="text-2xl md:text-3xl font-bold font-['Montserrat'] tracking-tight uppercase">Kho ảnh đang trống</h3>
+                  <button onClick={loadImages} className="px-10 py-4 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl">Thử lại</button>
+                </div>
               </div>
             )}
           </>
-        ) : currentView === AppView.TIMELINE ? (
-          <Timeline />
         ) : (
-          <PromptGenerator />
+          <Timeline />
         )}
       </main>
 
       <Lightbox image={activeImage} onClose={() => setActiveImage(null)} />
 
-      <footer className="py-20 px-6 flex flex-col items-center justify-center gap-8 border-t border-white/[0.02] mt-20">
-        <div className="flex items-center gap-10 opacity-30">
-          <div className="h-[1px] w-20 bg-gradient-to-r from-transparent to-white"></div>
-          <div className="text-[10px] font-bold tracking-[0.5em] uppercase">Archive Core</div>
-          <div className="h-[1px] w-20 bg-gradient-to-l from-transparent to-white"></div>
+      {/* Modern Refined Footer with ORIGINAL content */}
+      <footer className="relative py-24 md:py-32 px-6 flex flex-col items-center justify-center border-t border-white/[0.03] mt-20 overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-pink-500/5 blur-[100px] rounded-full"></div>
+        
+        <div className="relative z-10 flex flex-col items-center gap-10 md:gap-14 w-full max-w-4xl">
+          {/* Logo & Divider */}
+          <div className="flex items-center justify-center gap-6 md:gap-12 w-full">
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-pink-500/20"></div>
+            
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-pink-500/20 blur-xl rounded-full animate-pulse"></div>
+              <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full glass border border-pink-500/20 flex items-center justify-center group cursor-help transition-all duration-500 hover:border-pink-500/50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-pink-500 group-hover:scale-125 transition-transform duration-500 drop-shadow-[0_0_8px_rgba(251,113,133,0.6)]">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-white/10 to-pink-500/20"></div>
+          </div>
+
+          {/* Text Content - RESTORED ORIGINAL TEXT */}
+          <div className="text-center space-y-4 md:space-y-6">
+            <h4 className="text-[11px] md:text-[14px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-white/90">
+              THE ETERNAL CHAPTERS • OUR JOURNEY
+            </h4>
+            <div className="flex flex-col gap-2">
+              <p className="text-[10px] md:text-[12px] text-gray-400 font-medium tracking-[0.2em] md:tracking-[0.3em] uppercase max-w-lg mx-auto leading-relaxed italic">
+                "CHRONICLING A PATH BUILT ON LOVE, GROWTH, AND ENDLESS MOMENTS TOGETHER."
+              </p>
+              <div className="w-12 h-[1px] bg-pink-500/30 mx-auto mt-4"></div>
+            </div>
+          </div>
+
+          {/* Legal/System Info */}
+          <div className="flex flex-col items-center gap-4 opacity-30">
+            <span className="text-[8px] md:text-[9px] uppercase tracking-[0.4em] text-white font-bold">
+              Personal Archive • Established 2025
+            </span>
+            <div className="flex gap-4">
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></div>
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+            </div>
+          </div>
         </div>
-        <div className="text-center space-y-2">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-gray-600">Created with Passion for Mai Chi</p>
-          <p className="text-[8px] uppercase tracking-[0.3em] text-gray-700">© 2024-2025 • All Rights Reserved</p>
-        </div>
-        <button 
-          onClick={() => {
-            sessionStorage.removeItem('maichi_authorized');
-            window.location.reload();
-          }}
-          className="text-[9px] uppercase tracking-[0.5em] text-pink-500/50 hover:text-pink-500 transition-colors font-bold"
-        >
-          Relock Gallery
-        </button>
       </footer>
       
       <style>{`
         @keyframes reveal {
-          from { opacity: 0; transform: translateY(50px); filter: blur(20px); }
+          from { opacity: 0; transform: translateY(30px); filter: blur(10px); }
           to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
-        .animate-reveal { animation: reveal 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-reveal { animation: reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}</style>
     </div>
   );
