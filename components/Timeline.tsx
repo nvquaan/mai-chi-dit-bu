@@ -4,33 +4,33 @@ import LoveTimer from './LoveTimer';
 
 const TIMELINE_EVENTS = [
   { 
-    date: '08 Mar 2025', 
-    title: 'Initial Connection', 
-    desc: 'Bắt đầu những dòng tin nhắn làm quen đầu tiên qua lại.',
+    date: '08 Tháng 3, 2025', 
+    title: 'Sợi dây kết nối', 
+    desc: 'Bắt đầu những dòng tin nhắn làm quen đầu tiên, những rung động nhẹ nhàng qua màn hình nhỏ.',
     color: 'bg-rose-100'
   },
   { 
-    date: '31 Mar 2025', 
-    title: 'The First Encounter', 
-    desc: 'Đi ăn pizza rồi đi xem phim. Buổi hẹn đầu khá ổn.',
+    date: '31 Tháng 3, 2025', 
+    title: 'Buổi hẹn hò đầu tiên', 
+    desc: 'Hương vị Pizza và rạp phim. Một buổi tối ngượng ngùng nhưng đầy ắp những nụ cười.',
     color: 'bg-purple-100'
   },
   { 
-    date: '13 Apr 2025', 
-    title: 'A Confession', 
-    desc: 'Mở lời nhưng bị từ chối. Một kỷ niệm đáng nhớ.',
+    date: '13 Tháng 4, 2025', 
+    title: 'Lời bày tỏ chân thành', 
+    desc: 'Một khoảnh khắc can đảm để nói ra tiếng lòng, dẫu có chút thử thách nhưng thật đáng trân trọng.',
     color: 'bg-amber-100'
   },
   { 
-    date: '20 Apr 2025', 
-    title: 'Official Union', 
-    desc: 'Chốt đơn. Chính thức bắt đầu mối quan hệ.',
+    date: '20 Tháng 4, 2025', 
+    title: 'Chính thức bên nhau', 
+    desc: 'Ngày hai trái tim tìm thấy nhịp đập chung. Một khởi đầu mới đầy hứa hẹn và yêu thương.',
     color: 'bg-pink-100'
   },
   { 
-    date: '05 Jul 2025', 
-    title: 'The First Journey', 
-    desc: 'Chuyến đi xa đầu tiên cùng nhau, có thêm nhiều trải nghiệm mới.',
+    date: '05 Tháng 7, 2025', 
+    title: 'Chuyến hành trình đầu tiên', 
+    desc: 'Cùng nhau đi đến những vùng đất mới, viết tiếp những kỷ niệm rực rỡ dưới ánh nắng hè.',
     color: 'bg-blue-100'
   },
 ];
@@ -39,8 +39,8 @@ const Timeline: React.FC = () => {
   return (
     <div className="pt-48 pb-40 px-6 max-w-4xl mx-auto min-h-screen">
       <div className="text-center mb-32 space-y-6 animate-reveal">
-        <span className="text-script text-3xl text-pink-400 block">Our Love Story</span>
-        <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-serif text-romantic">
+        <span className="text-script text-3xl text-pink-400 block">Câu Chuyện Tình Yêu</span>
+        <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-serif text-romantic">
           Hành trình Kỷ niệm
         </h2>
         <div className="flex items-center justify-center gap-4">
@@ -65,7 +65,7 @@ const Timeline: React.FC = () => {
               <div className="relative">
                 <span className="text-script text-xl text-pink-400 block mb-2">{event.date}</span>
                 <h3 className="text-2xl font-black tracking-tight text-gray-800 mb-4">{event.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed font-medium">{event.desc}</p>
+                <p className="text-gray-500 text-sm leading-relaxed font-medium italic">{event.desc}</p>
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@ const Timeline: React.FC = () => {
 
       <div className="mt-48 text-center animate-reveal">
          <div className="inline-block py-6 px-12 glass rounded-full border border-pink-100 animate-float">
-            <p className="text-script text-2xl text-pink-400">Vẫn còn tiếp tục...</p>
+            <p className="text-script text-2xl text-pink-400">Vẫn còn tiếp tục viết tiếp...</p>
          </div>
       </div>
     </div>
