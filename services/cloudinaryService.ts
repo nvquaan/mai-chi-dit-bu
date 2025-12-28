@@ -1,12 +1,11 @@
 
 /**
- * Cloudinary Frontend Service
- * Sử dụng tính năng "Resource Listing" để lấy ảnh theo Tag.
- * Yêu cầu: Bỏ chọn "Resource list" trong Cloudinary Settings > Security.
+ * Cloudinary Frontend Delivery Service
+ * Sử dụng tính năng "Resource Listing" (Tag-based) để hiển thị ảnh.
  */
 
 const CLOUD_NAME = 'dadfqpexa';
-const TAG_NAME = 'maichi'; // Bạn cần gắn tag 'maichi' cho các ảnh trên Cloudinary
+const TAG_NAME = 'maichi'; 
 
 export const getCloudinaryUrl = (publicId: string, options: { width?: number; height?: number; crop?: string } = {}) => {
   if (!publicId) return '';
@@ -27,44 +26,37 @@ export const getCloudinaryUrl = (publicId: string, options: { width?: number; he
 
 export const fetchImagesFromCloudinary = async () => {
   try {
-    // API lấy danh sách ảnh theo tag của Cloudinary (không cần Secret)
     const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${TAG_NAME}.json`;
     
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: { 'Accept': 'application/json' },
     });
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error(`Không tìm thấy tag "${TAG_NAME}". Hãy đảm bảo bạn đã gắn tag này cho ít nhất 1 ảnh.`);
+        throw new Error(`Tag "${TAG_NAME}" chưa có ảnh nào. Vui lòng gắn tag trên Cloudinary.`);
       }
-      throw new Error('Lỗi cấu hình Cloudinary: Hãy kiểm tra xem bạn đã bỏ chọn "Resource list" trong Settings > Security chưa.');
+      throw new Error('Cấu hình Cloudinary chưa đúng (Resource List bị chặn hoặc sai Cloud Name).');
     }
 
     const data = await response.json();
     
-    if (!data.resources || data.resources.length === 0) {
-      return [];
-    }
-
     return data.resources.map((res: any) => ({
       id: res.public_id,
       url: res.public_id,
       title: 'Khoảnh khắc yêu thương',
       artist: 'Mai Chi',
       category: 'Kỷ Niệm',
-      width: res.width || 800,
-      height: res.height || 600,
+      width: res.width || 1200,
+      height: res.height || 800,
       cloudinaryData: {
         public_id: res.public_id,
         format: res.format
       }
     }));
   } catch (error: any) {
-    console.error('Fetch Images Error:', error);
+    console.error('Cloudinary Error:', error);
     throw error;
   }
 };
